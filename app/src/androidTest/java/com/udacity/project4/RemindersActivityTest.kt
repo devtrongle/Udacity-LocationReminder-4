@@ -30,6 +30,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.koin.android.ext.android.get
+import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
@@ -156,7 +157,7 @@ class RemindersActivityTest :
         Espresso.onView(ViewMatchers.withId(R.id.selectLocation)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.save_button)).perform(ViewActions.click())
         Espresso.onView(ViewMatchers.withId(R.id.saveReminder)).perform(ViewActions.click())
-        Espresso.onView(ViewMatchers.withText(appContext.getString(R.string.geofences_added_success)))
+        Espresso.onView(ViewMatchers.withText(R.string.geofences_added_success))
             .inRoot(withDecorView(not(`is`(activityRule?.activity?.window?.decorView)))).check(ViewAssertions.matches(isDisplayed()))
 
         // Make sure the activity is closed before resetting the db.

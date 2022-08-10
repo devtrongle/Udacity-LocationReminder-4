@@ -27,6 +27,7 @@ import com.udacity.project4.locationreminders.data.local.LocalDB
 import com.udacity.project4.locationreminders.data.local.RemindersLocalRepository
 import com.udacity.project4.locationreminders.savereminder.SaveReminderViewModel
 import com.udacity.project4.util.DataBindingIdlingResource
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
@@ -54,10 +55,9 @@ import org.mockito.Mockito.verify
 @MediumTest
 class ReminderListFragmentTest {
 
-//    TODO: add testing for the error messages.
-
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
+
     private lateinit var repository: ReminderDataSource
     private lateinit var appContext: Application
 
@@ -101,14 +101,12 @@ class ReminderListFragmentTest {
 
     @Test
     fun test_for_DataTextViewDisplayed_NoData() = runBlockingTest {
-        repository.deleteAllReminders()
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
         onView(withId(R.id.noDataTextView)).check(ViewAssertions.matches(isDisplayed()))
     }
 
     @Test
     fun test_for_remindersRecyclerViewDisplayed_HasData() = runBlockingTest {
-        repository.deleteAllReminders()
         val reminder1 = ReminderDTO(
             title = "Title test 1",
             description = "Description test 1",
@@ -121,8 +119,10 @@ class ReminderListFragmentTest {
             location = "Location test 2",
             latitude = 10.819689728300116,
             longitude = 106.65901825254176)
-        repository.saveReminder(reminder1)
-        repository.saveReminder(reminder2)
+        runBlocking(context = Dispatchers.IO) {
+            repository.saveReminder(reminder1)
+            repository.saveReminder(reminder2)
+        }
 
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
 
@@ -135,17 +135,19 @@ class ReminderListFragmentTest {
 
     @Test
     fun test_for_DataTextViewGone_HasData() = runBlockingTest {
-        repository.deleteAllReminders()
         val reminder = ReminderDTO(
-            title = "Title test",
-            description = "Description test",
+            title = "Title test DataTextViewGone",
+            description = "Description test DataTextViewGone",
             location = "Location test",
             latitude = 10.819689728300116,
             longitude = 106.65901825254176)
-        repository.saveReminder(reminder)
+        runBlocking(context = Dispatchers.IO) {
+            repository.saveReminder(reminder)
+        }
 
         launchFragmentInContainer<ReminderListFragment>(Bundle(), R.style.AppTheme)
-        onView(withId(R.id.noDataTextView)).check(ViewAssertions.matches(CoreMatchers.not(isDisplayed())))
+        onView(withId(R.id.noDataTextView)).check(ViewAssertions.matches(CoreMatchers.not(isDisplayed()))
+        )
     }
 
 }
