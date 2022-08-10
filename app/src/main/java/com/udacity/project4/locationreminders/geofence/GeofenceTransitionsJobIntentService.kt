@@ -2,6 +2,7 @@ package com.udacity.project4.locationreminders.geofence
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.core.app.JobIntentService
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingEvent
@@ -35,6 +36,8 @@ class GeofenceTransitionsJobIntentService : JobIntentService(), CoroutineScope {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         if (!geofencingEvent.hasError() && geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
             sendNotification(geofencingEvent.triggeringGeofences)
+        } else if (geofencingEvent.hasError()){
+            Log.e("CheckApp", "hasError ${geofencingEvent.hasError()}")
         }
     }
 

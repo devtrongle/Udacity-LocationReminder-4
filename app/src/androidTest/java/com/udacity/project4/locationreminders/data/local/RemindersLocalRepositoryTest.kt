@@ -75,6 +75,22 @@ class RemindersLocalRepositoryTest {
     }
 
     @Test
+    fun test_for_SaveReminder_retrievesDataNotFound() = runBlocking {
+        val reminder = ReminderDTO(
+            title = "Title test",
+            description = "Description test",
+            location = "Location test",
+            latitude = 10.819689728300116,
+            longitude = 106.65901825254176)
+        val result = remindersLocalRepository.getReminder(reminder.id)
+
+        assertThat(result is Result.Error, `is`(true))
+        result as Result.Error
+
+        assertThat(result.message, `is`("Reminder not found!"))
+    }
+
+    @Test
     fun test_for_SaveReminder_retrievesReminders() = runBlocking {
         val reminder = ReminderDTO(
             title = "Title test",

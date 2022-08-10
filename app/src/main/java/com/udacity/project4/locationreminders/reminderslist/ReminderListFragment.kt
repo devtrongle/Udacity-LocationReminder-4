@@ -35,8 +35,6 @@ class ReminderListFragment : BaseFragment() {
         setDisplayHomeAsUpEnabled(false)
         setTitle(getString(R.string.app_name))
 
-        sendRequestPermissions()
-
         binding.refreshLayout.setOnRefreshListener { _viewModel.loadReminders() }
 
         _viewModel.showLoading.observe(viewLifecycleOwner) {
@@ -85,28 +83,4 @@ class ReminderListFragment : BaseFragment() {
         inflater.inflate(R.menu.main_menu, menu)
     }
 
-    private fun sendRequestPermissions(){
-        val permissions = arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissionLauncher.launch(permissions)
-        }
-    }
-
-    private val requestPermissionLauncher =
-        registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ) { results ->
-            var isGranted = true
-            results.forEach {
-                if (!it.value) {
-                    isGranted = false
-                }
-            }
-            if (!isGranted) {
-                _viewModel.showToast.value = getString(R.string.permission_denied_explanation)
-            }
-        }
 }

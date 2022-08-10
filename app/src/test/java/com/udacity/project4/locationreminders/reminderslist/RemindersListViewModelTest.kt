@@ -66,7 +66,15 @@ class RemindersListViewModelTest {
     @Test
     fun test_for_loadReminders_ResultError() {
         fakeDataSource.setShouldReturnError(true)
+
+        // Pause dispatcher so you can verify initial values.
+        mainCoroutineRule.pauseDispatcher()
         remindersListViewModel.loadReminders()
+        MatcherAssert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+        // Execute pending coroutines actions.
+        mainCoroutineRule.resumeDispatcher()
+        MatcherAssert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
+
         MatcherAssert.assertThat(
             remindersListViewModel.showSnackBar.getOrAwaitValue(),
             `is`(RESULT_ERROR)
@@ -77,7 +85,14 @@ class RemindersListViewModelTest {
     fun test_for_loadReminders_ResultSuccessHasData() = runBlockingTest {
         fakeDataSource.setShouldReturnError(false)
         fakeDataSource.saveReminders(reminders)
+
+        // Pause dispatcher so you can verify initial values.
+        mainCoroutineRule.pauseDispatcher()
         remindersListViewModel.loadReminders()
+        MatcherAssert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+        // Execute pending coroutines actions.
+        mainCoroutineRule.resumeDispatcher()
+        MatcherAssert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
         MatcherAssert.assertThat(remindersListViewModel.showNoData.getOrAwaitValue(), `is`(false))
         MatcherAssert.assertThat(
             remindersListViewModel.remindersList.getOrAwaitValue(),
@@ -98,7 +113,14 @@ class RemindersListViewModelTest {
     fun test_for_loadReminders_ResultSuccessNoData() = runBlockingTest {
         fakeDataSource.setShouldReturnError(false)
         fakeDataSource.deleteAllReminders()
+        // Pause dispatcher so you can verify initial values.
+        mainCoroutineRule.pauseDispatcher()
         remindersListViewModel.loadReminders()
+        MatcherAssert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(true))
+        // Execute pending coroutines actions.
+        mainCoroutineRule.resumeDispatcher()
+        MatcherAssert.assertThat(remindersListViewModel.showLoading.getOrAwaitValue(), `is`(false))
+
         MatcherAssert.assertThat(remindersListViewModel.showNoData.getOrAwaitValue(), `is`(true))
         MatcherAssert.assertThat(remindersListViewModel.remindersList.getOrAwaitValue(), `is`(emptyList()))
     }
